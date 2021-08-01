@@ -1,0 +1,22 @@
+version: "2"
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80/tcp"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./static:/static
+    depends_on:
+      - web
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web
+    command: gunicorn DCCWWebDemo.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./static:/usr/src/app/staticfiles
+    expose:
+      - "8000"

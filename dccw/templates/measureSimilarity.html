@@ -1,0 +1,137 @@
+{% load static %}
+{% load index %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- <link rel="icon" href="{% static 'img/icon.ico' %}"> -->
+    <script type="module" src="{% static 'js/load_graph.js' %}"></script>
+	<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+<script>
+	function nth(n) { return ["st", "nd", "rd"][((n + 90) % 100 - 10) % 10 - 1] || "th" }
+</script>
+
+<div class="sticky top-0 w-screen bg-white border-gray-300 border-b overflow-x-auto">
+	<div class="w-screen text-lg">
+		<p><a href="/" class="font-bold hover:text-pink-600 ml-3">DCCW</a>: Similarity Measurement</p>
+	</div>
+	<div class="flex flex-col justify-center items-baseline">
+		<form class="form w-screen m-auto" method="post" action="">
+			<div class="flex max-w-xl justify-between m-auto items-center border-b border-indigo-500 py-2">
+				{% csrf_token %}
+				<input
+					class="appearance-none bg-transparent border-none text-gray-700 mr-3 py-1 px-2 w-screen leading-tight focus:outline-none"
+					type="text" placeholder="Enter Hex Input: #101c57#30375d,#101c57#30375d,#101c57#30375d" name="hex_input" />
+				<button
+					class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+					type="submit" name="load" value="load">Load</button>
+			</div>
+		</form>
+		{% if messages %}
+		<div class="text-center mx-auto">
+			{% for message in messages %}
+			<p class="text-red-500">{{ message }}</p>
+			{% endfor %}
+		</div>
+		{% endif %}
+
+		<div class="text-center mx-auto my-3">
+			<p>Or</p>
+		</div>
+
+		<form class="form mx-auto my-3" method="post" action="">
+			<div class="flex justify-center">
+				{% csrf_token %}
+				<button
+					class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+					type="submit" name="random" value="random">Random</button>
+			</div>
+		</form>
+
+		{% if not messages %}
+		<div class="flex flex-row flex-nowrap mx-auto my-3 justify-center items-center">
+			<p class="w-32 text-right mr-5">Query Palette</p>
+			<div class="flex flex-row">
+				{% for c in source_data %}
+				<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+				{% endfor %}
+			</div>
+		
+		</div>
+		{% for palette in hex_data_list %}
+		<div class="flex flex-row flex-nowrap mx-auto my-3 justify-center items-center">
+			<p class="w-32 text-right mr-5">Target Palette {{ forloop.counter }}</p>
+			<div class="flex flex-row">
+				{% for c in palette %}
+				<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+				{% endfor %}
+			</div>
+		
+		</div>
+		{% endfor %}
+		{% endif %}
+	</div>
+</div>
+
+
+<div class="flex flex-col w-full overflow-x-auto">
+	{% for measurement_type, measurement_data in sorted_data_list.items %}
+	<div class="flex flex-row p-10 border-b border-dashed m-auto">	
+		{% if forloop.counter0 == 0 %}
+		<p class="w-80 flex-shrink-0 pt-8 text-right font-bold">{{ measurement_type }}</p>
+		{% else %} 
+		<p class="w-80 flex-shrink-0 text-right font-bold">{{ measurement_type }}</p>
+		{% endif %}
+		<div class="flex-shrink-0 grid grid-cols-{{ hex_data_list|length }}">
+			{% for cur_measurement_data in measurement_data %}
+			<div class="flex flex-col gap-3 justify-center px-5 items-center text-center">
+				{% if forloop.parentloop.counter0 == 0 %}
+				<p class="font-bold">
+					{{ forloop.counter }}<script>document.write(nth({{ forloop.counter }}))</script> Matched
+				</p>
+				{% endif %}
+				<div class="flex flex-row items-center">
+					<div class="w-8">Q</div>
+					{% for c in source_data %}
+					<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+					{% endfor %}
+				</div>
+				
+				<div class="flex flex-row items-center">
+					<div class="w-8">T{{ cur_measurement_data.hex_index|add:1 }}</div>
+					{% for c in hex_data_list|index:cur_measurement_data.hex_index %}
+					<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+					{% endfor %}
+				</div>
+
+				{% if cur_measurement_data.sorted_indices %}
+					<p class="italic">⬇️ Sorted</p>
+					<div class="flex flex-row items-center">
+					<div class="w-8">Q</div>
+					{% for i in cur_measurement_data.sorted_indices.0 %}
+						<div class="w-8 h-8" style="background-color:{{ source_data|index:i }}"></div>
+					{% endfor %}
+					</div>	
+					<div class="flex flex-row items-center">
+					<div class="w-8">T{{ cur_measurement_data.hex_index|add:1 }}</div>
+					{% for i in cur_measurement_data.sorted_indices.1 %}
+						<div class="w-8 h-8" style="background-color:{{ hex_data_list|index:cur_measurement_data.hex_index|index:i }}"></div>
+					{% endfor %}
+					</div>
+				{% endif %}
+
+				
+				<p class="w-52">Similarity: {{ cur_measurement_data.similarity|floatformat:2 }}</p>
+				
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+	{% endfor %}
+</div>
+</body>
+</html>

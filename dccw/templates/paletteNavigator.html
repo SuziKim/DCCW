@@ -1,0 +1,90 @@
+{% load static %}
+{% load index %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- <link rel="icon" href="{% static 'img/icon.ico' %}"> -->
+<script src="{% static 'js/chroma-light.js' %}"></script>
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="sticky top-0 w-full bg-white border-gray-300 border-b overflow-x-auto">
+	<div class="w-full text-lg">
+		<p><a href="/" class="font-bold hover:text-pink-600 ml-3">DCCW</a>: Application 3. Palette Navigation</p>
+	</div>
+	<div class="flex flex-col justify-center items-baseline">
+		<form class="form w-full m-auto" method="post" action="">
+			<div class="flex max-w-xl justify-between m-auto items-center border-b border-indigo-500 py-2">
+				{% csrf_token %}
+				<input
+					class="appearance-none bg-transparent border-none text-gray-700 mr-3 py-1 px-2 w-full leading-tight focus:outline-none"
+					type="text" placeholder="Enter Hex Input: #5d5753#6b6460#a9a9a9#816214" name="hex_input" />
+				<button
+					class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+					type="submit" name="load" value="load">Load</button>
+			</div>
+		</form>
+		{% if messages %}
+		<div class="text-center mx-auto">
+			{% for message in messages %}
+			<p class="text-red-500">{{ message }}</p>
+			{% endfor %}
+		</div>
+		{% endif %}
+
+		<div class="text-center mx-auto my-3">
+			<p>Or</p>
+		</div>
+
+		<form class="form mx-auto my-3" method="post" action="">
+			<div class="flex justify-center">
+				{% csrf_token %}
+				<button
+					class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+					type="submit" name="random" value="random">Random</button>
+			</div>
+		</form>
+
+		{% if not messages %}
+		<div class="flex flex-row flex-nowrap mx-auto my-3 justify-center items-center">
+			<p class="w-32 mr-5 text-right">Input Palette</p>
+			<div class="flex flew-row">
+				{% for c in hex_data %}
+				<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+				{% endfor %}
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+
+
+<div class="grid grid-flow-row m-10 gap-10 overflow-x-auto">
+	<div class="sorting-result-contents">
+		{% for dataset_name, results_array in query_results.items %}
+		<p>[{{ dataset_name }}] Top-3 query results</p>
+			{% for result_dic in results_array %}
+			<div style="border: 1px solid black;">
+				{% if 'image_path' in result_dic %}
+				<p><img src="{{ result_dic.image_path }}"></p>
+				{% endif %}
+				<p>
+				<table class="color-palette">
+				{% for hex in result_dic.sorted_hex %}
+					<td class="source-palette" style="background-color:{{ hex }}">
+					</td>
+				{% endfor %}
+				</table>
+				</p>
+				<p>Distance: {{ result_dic.distance }}</p>
+				<p>ID: {{ result_dic.id }}</p>
+			</div>
+			{% endfor %}
+		{% endfor %}
+	</div>
+</div>
+
+</body>
+</html>

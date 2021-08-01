@@ -1,0 +1,138 @@
+{% load static %}
+{% load index %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- <link rel="icon" href="{% static 'img/icon.ico' %}"> -->
+<script src="{% static 'js/chroma-light.js' %}"></script>
+<script type="module" src="{% static 'js/interpolate_palette.js' %}"></script>
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="sticky top-0 w-full bg-white border-gray-300 border-b overflow-x-auto">
+	<div class="w-full text-lg">
+		<p><a href="/" class="font-bold hover:text-pink-600 ml-3">DCCW</a>: Application 1. Palette Interpolator</p>
+	</div>
+	<div class="flex flex-col justify-center items-baseline">
+		<form class="form w-full m-auto" method="post" action="">
+			<div class="flex max-w-xl justify-between m-auto items-center border-b border-indigo-500 py-2">
+				{% csrf_token %}
+				<input
+					class="appearance-none bg-transparent border-none text-gray-700 mr-3 py-1 px-2 w-full leading-tight focus:outline-none"
+					type="text" placeholder="Enter Hex Input: #5d5753#6b6460#a9a9a9#816214" name="hex_input" />
+				<button
+					class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+					type="submit" name="load" value="load">Load</button>
+			</div>
+		</form>
+		{% if messages %}
+		<div class="text-center mx-auto">
+			{% for message in messages %}
+			<p class="text-red-500">{{ message }}</p>
+			{% endfor %}
+		</div>
+		{% endif %}
+
+		<div class="text-center mx-auto my-3">
+			<p>Or</p>
+		</div>
+
+		<form class="form mx-auto my-3" method="post" action="">
+			<div class="flex justify-center">
+				{% csrf_token %}
+				<button
+					class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+					type="submit" name="random" value="random">Random</button>
+			</div>
+		</form>
+
+		{% if not messages %}
+		<div class="flex flex-row flex-nowrap mx-auto my-3 justify-center items-center">
+			<p class="w-72 mr-5 text-right">Input Palette</p>
+			<div class="flex flew-row">
+				{% for c in hex_data %}
+				<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="flex flex-row flex-nowrap mx-auto my-3 justify-center items-center">
+			<p class="w-72 mr-5 text-right">Sorted Result: DCCW-based</p>
+			<div class="flex flew-row">
+				{% for idx in sorted_indices_dccw.orig %}
+				<div class="w-8 h-8" style="background-color:{{ hex_data|index:idx }}"></div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="flex flex-row flex-nowrap mx-auto my-3 justify-center items-center">
+			<p class="w-72 mr-5 text-right">Sorted Result: HSV-based</p>
+			<div class="flex flew-row">
+				{% for idx in sorted_indices_hsv.orig %}
+				<div class="w-8 h-8" style="background-color:{{ hex_data|index:idx }}"></div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="flex flex-row flex-nowrap mx-auto my-3 justify-center items-center">
+			<p class="w-72 mr-5 text-right">Sorted Result: Luminance-based</p>
+			<div class="flex flew-row">
+				{% for idx in sorted_indices_luminance.orig %}
+				<div class="w-8 h-8" style="background-color:{{ hex_data|index:idx }}"></div>
+				{% endfor %}
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+
+{% if not messages %}
+<div class="grid grid-flow-col mx-auto my-10 overflow-x-auto">
+	<div class="flex flex-col justify-center items-center">
+		<p class="mb-3 font-bold">Polygon-shaped interpolation: DCCW</p>
+		<canvas id="polygon-shape-palette-sorted" class="container w-80 h-80" width=300 height=300></canvas>
+	</div>
+	<div class="flex flex-col justify-center items-center">
+		<p class="mb-3 font-bold">Polygon-shaped interpolation: HSV</p>
+		<canvas id="polygon-shape-palette-hsv" class="container w-80 h-80" width=300 height=300></canvas>
+	</div>
+	<div class="flex flex-col justify-center items-center">
+		<p class="mb-3 font-bold">Polygon-shaped interpolation: Luminance</p>
+		<canvas id="polygon-shape-palette-luminance" class="container w-80 h-80" width=300 height=300></canvas>
+	</div>
+</div>
+
+<div class="grid grid-flow-col mx-auto my-10 overflow-x-auto">
+	<div class="flex flex-col justify-center items-center">
+		<p class="mb-3 font-bold">Half-disk-shaped interpolation: DCCW</p>
+		<canvas id="half-disk-shape-palette-sorted" class="container w-80 h-40" width=300 height=150></canvas>
+	</div>
+	<div class="flex flex-col justify-center items-center">
+		<p class="mb-3 font-bold">Half-disk-shaped interpolation: HSV</p>
+		<canvas id="half-disk-shape-palette-hsv" class="container w-80 h-40" width=300 height=150></canvas>
+	</div>
+	<div class="flex flex-col justify-center items-center">
+		<p class="mb-3 font-bold">Half-disk-shaped interpolation: Luminance</p>
+		<canvas id="half-disk-shape-palette-luminance" class="container w-80 h-40" width=300 height=150></canvas>
+	</div>
+</div>
+
+
+</div>
+
+<script type='module'>
+	import { draw_polygon_interpolation } from "{% static 'js/interpolate_palette.js' %}";
+	import { draw_half_disk_interpolation } from "{% static 'js/interpolate_palette.js' %}";
+
+	draw_polygon_interpolation('polygon-shape-palette-sorted', {{ hex_data|safe }}, {{ sorted_indices_dccw.anchored }});
+	draw_half_disk_interpolation('half-disk-shape-palette-sorted', {{ hex_data|safe }}, {{ sorted_indices_dccw.orig }});
+
+	draw_polygon_interpolation('polygon-shape-palette-hsv', {{ hex_data|safe }}, {{ sorted_indices_hsv.anchored }});
+	draw_half_disk_interpolation('half-disk-shape-palette-hsv', {{ hex_data|safe }}, {{ sorted_indices_hsv.orig }});
+
+	draw_polygon_interpolation('polygon-shape-palette-luminance', {{ hex_data| safe }}, {{ sorted_indices_luminance.anchored }});
+	draw_half_disk_interpolation('half-disk-shape-palette-luminance', {{ hex_data| safe }}, {{ sorted_indices_luminance.orig }});
+</script>
+{% endif %}
+
+</body>
+</html>

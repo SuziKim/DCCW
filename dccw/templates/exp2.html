@@ -1,0 +1,75 @@
+{% load static %}
+{% load index %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- <link rel="icon" href="{% static 'img/icon.ico' %}"> -->
+<script type="module" src="{% static 'js/load_graph.js' %}"></script>
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="sticky top-0 w-full bg-white border-gray-300 border-b overflow-x-auto">
+	<div class="w-full text-lg">
+		<p><a href="/" class="font-bold hover:text-pink-600 ml-3">DCCW</a>: Experiment 2. Palette Pair Sorting of KHTP ({{ khtp_type }})</p>
+	</div>
+
+	<div class="flex flex-col justify-center items-baseline">
+		{% for palette in hex_data %}
+		<div class="flex flex-row flex-nowrap justify-center mx-auto my-3 items-center">
+			<p class="w-52 mr-5 text-right flex-shrink-0">Palette {{ forloop.counter }}</p>
+			<div class="flex flew-row flex-shrink-0">
+				{% for c in palette %}
+				<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+				{% endfor %}
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+
+<div class="grid grid-flow-row m-10 gap-10 overflow-x-auto">
+{% for sort_type, palettes in sorted_indices.items %}
+	<div class="flex flex-row justify-center items-center">
+		<div class="flex flex-col justify-center items-center w-80">
+			<p class="mb-3 font-bold">{{ sort_type }}</p>
+			<canvas id="graph_{{ sort_type }}" class="w-52 h-52"></canvas>
+		</div>
+		
+		<div class="flex flex-col">
+			{% for palette in palettes %}
+			<div class="flex flew-row my-1">
+				{% for cidx in palette %}
+				<div class="w-8 h-8" style="background-color:{% value_of_double_indices hex_data forloop.parentloop.counter0 cidx %}"></div>
+				{% endfor %}
+			</div>
+			{% endfor %}
+			<ul class="list-disc list-inside mt-3">
+				<li>[Naturalness] LD: {{ naturalness_LD|index:sort_type|floatformat:-4 }}</li>
+				<li>[Naturalness] LLIS: {{ naturalness_LLIS|index:sort_type|floatformat:-4 }}</li>
+				<li>[Concurrency] LD: {{ concurrency_LD|index:sort_type|floatformat:-4 }}</li>
+				<li>[Concurrency] LLCS: {{ concurrency_LLCS|index:sort_type|floatformat:-4 }}</li>
+				<li>Elapsed time: {{ elapsed_time|index:sort_type|floatformat:-4 }}</li>
+			</ul>
+		</div>
+	</div>
+{% endfor %}
+</div>
+
+<script type='module'>
+import { load_multiple_palettes_graphs } from "{% static 'js/load_graph.js' %}";
+import { add_multiple_palettes_lines } from "{% static 'js/load_graph.js' %}";
+
+let colormaps = [0x0000ff, 0xff0000];
+
+{% for sort_type, palettes in sorted_indices.items %}
+	load_multiple_palettes_graphs("graph_{{ sort_type }}", {{ hex_data|safe }}, {{ geo_coords }});
+	add_multiple_palettes_lines("graph_{{ sort_type }}", {{ palettes }}, {{ geo_coords }}, colormaps);
+{% endfor %}
+
+
+</script>
+
+</body>
+</html>

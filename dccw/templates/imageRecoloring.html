@@ -1,0 +1,157 @@
+{% load static %}
+{% load index %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- <link rel="icon" href="{% static 'img/icon.ico' %}"> -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="sticky top-0 w-full bg-white border-gray-300 border-b overflow-x-auto">
+	<div class="w-full text-lg">
+		<p><a href="/" class="font-bold hover:text-pink-600 ml-3">DCCW</a>: Application 2. Image Recoloring</p>
+	</div>
+
+
+	<div class="flex flex-col w-max justify-center mx-auto items-center py-5">
+		<div class="w-full font-bold text-left">✅  Follow the steps</div>
+		<div class="w-full font-semibold text-left pt-3">1. Load an Image</div>
+		<form class="form w-full p-3 mx-auto" method="post" enctype="multipart/form-data" id="upload_form">
+			{% csrf_token %}
+			{% for field in file_form %} 
+				{{ field }}
+			{% endfor %}
+		</form>
+		{% if current_file_name %}
+		<div class="text-sm w-full text-center">
+			Uploaded File Name: {{ current_file_name }}
+		</div>
+		{% endif %}
+
+		<div class="w-full font-semibold text-left pt-5">2. Recolor with a New Palette</div>
+		<div class="flex flex-row items-center">
+			<div class="flex flex-col">
+				<form class="form w-96 mx-auto" method="post" action="" >
+					<div class="flex max-w-xl justify-between m-auto items-center border-b border-indigo-500 py-2">
+						{% csrf_token %}
+						<input
+							class="appearance-none bg-transparent border-none text-gray-700 mr-3 py-1 px-2 w-full leading-tight focus:outline-none"
+							type="text" placeholder="#8EBEDC#EF7B82#BFA4C2#469FC8#6AADD3" name="hex_input" />
+						<input
+							class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+							type="submit" name="recolor" value="Recolor" />
+					</div>
+				</form>
+				{% if messages %}
+				<div class="text-center mx-auto">
+					{% for message in messages %}
+					<p class="text-red-500">{{ message }}</p>
+					{% endfor %}
+				</div>
+				{% endif %}
+			</div>
+			<div class="w-16 text-sm text-center {% if messages %}pb-6{% endif %}">Or</div>
+			
+			<form class="form mx-auto my-3 {% if messages %}pb-6{% endif %}" method="post" action="">
+				<div class="flex justify-center">
+					{% csrf_token %}
+					<button
+						class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+						type="submit" name="random" value="random">Random</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="invisible absolute bottom-0 left-0 w-screen h-screen justify-around mt-10 bg-black opacity-50 content-center" id="spinning_button">
+	<div class="flex flex-row text-white text-xl justify-center content-center h-screen items-center">
+		<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+			viewBox="0 0 24 24">
+			<circle class="opacity-25" cx="12" cy="12" r="10" stroke="gray" stroke-width="4"></circle>
+			<path class="opacity-75" fill="currentColor"
+				d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+			</path>
+		</svg>
+		Processing
+	</div>
+</div>
+
+<div class="grid grid-flow-col mx-auto my-10 overflow-x-auto justify-center gap-5">
+	<div class="flex flex-col">
+		{% if source_image_path %}
+		<p class="w-60 text-center mx-auto mb-2 font-bold">Source Image</p>
+		<img class="w-60 mx-auto" src="{{ source_image_path }}">
+		{% endif %}
+
+		{% if source_palette %}
+		<p class="w-60 mt-5 text-center mx-auto mb-2 font-bold">Extracted Palette</p>
+		<div class="flex flew-row mx-auto">
+			{% for c in source_palette %}
+			<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+			{% endfor %}
+		</div>
+		{% endif %}
+	</div>
+
+	{% if target_palette %}
+	<div class="flex flex-col mx-auto">
+		<p class="w-60 text-center mx-auto mb-2 font-bold">Target Palette</p>
+		<div class="flex flew-row mx-auto">
+			{% for c in target_palette %}
+			<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+			{% endfor %}
+		</div>
+	</div>
+	{% endif %}
+
+	<div class="flex flex-col">
+		{% if tanetal_recoloring_path %}
+		<p class="w-60 text-center mx-auto mb-2 font-bold">Simple Transformation</p>
+		<img class="w-60 mx-auto" src="{{ tanetal_recoloring_path }}">
+		
+		<p class="w-60 mt-5 text-center mx-auto mb-2 font-bold">Target Palette</p>
+		<div class="flex flew-row mx-auto">
+			{% for c in target_palette %}
+			<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+			{% endfor %}
+		</div>
+		{% endif %}
+	</div>
+
+	<div class="flex flex-col">
+		{% if t2sbuffer_recoloring_path %}
+		<p class="w-60 text-center mx-auto mb-2 font-bold">Improved Transformation</p>
+		<img class="w-60 mx-auto" src="{{ t2sbuffer_recoloring_path }}">
+	
+		<p class="w-60 mt-5 text-center mx-auto mb-2 font-bold">Target Palette</p>
+		<div class="flex flew-row mx-auto">
+			{% for c in target_palette %}
+			<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+			{% endfor %}
+		</div>
+		<p class="w-60 mt-5 text-center mx-auto mb-2 font-bold">+</p>
+		{% if t2s_palette %}
+		<p class="w-60 mt-5 text-center mx-auto mb-2 font-bold">Buffered Palette</p>
+		<div class="flex flew-row mx-auto">
+			{% for c in t2s_palette %}
+			<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+			{% endfor %}
+		</div>
+		{% endif %}
+		{% endif %}
+	</div>
+</div>
+
+</body>
+
+<script>
+	document.getElementById("id_source_image").onchange = function () {
+		document.getElementById("spinning_button").classList.remove("invisible");
+		document.getElementById("upload_form").submit();
+	};
+</script>
+</html>

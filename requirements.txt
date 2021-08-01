@@ -1,0 +1,20 @@
+numpy==1.19.5
+colormath==3.0.0
+Django==3.2.3
+elementpath==2.2.2
+gunicorn==20.1.0
+requests==2.25.1
+urllib3==1.26.4
+scikit-opt==0.6.3
+scikit-build==0.11.1
+sklearn
+fastdtw==0.3.4
+pyemd==0.5.1
+Pillow==8.2.0
+PyNomaly==0.3.3
+# cmake==3.20.2
+cvxopt==1.2.6
+cvxpy==1.0.31
+cython==0.29.23
+# -e git+https://github.com/Homebrew/brew@35b15af4005ff0140a73a64e48abb4cbc85cc270#egg=elkai
+# elkai==0.1.2

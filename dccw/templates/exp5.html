@@ -1,0 +1,101 @@
+{% load static %}
+{% load index %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- <link rel="icon" href="{% static 'img/icon.ico' %}"> -->
+<script type="module" src="{% static 'js/load_graph.js' %}"></script>
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="sticky top-0 w-full bg-white border-gray-300 border-b overflow-x-auto">
+	<div class="w-full text-lg">
+		<p><a href="/" class="font-bold hover:text-pink-600 ml-3">DCCW</a>: Experiment 5. Multiple Palettes Sorting</p>
+	</div>
+
+	<div class="flex flex-col justify-center items-baseline">
+		<form class="form w-full m-auto" method="post" action="">
+			<div class="flex max-w-xl justify-between m-auto items-center border-b border-indigo-500 py-2">
+				{% csrf_token %}
+				<input
+					class="appearance-none bg-transparent border-none text-gray-700 mr-3 py-1 px-2 w-full leading-tight focus:outline-none"
+					type="text" placeholder="Enter Hex Input: #5d5753#175821#6b6460,#ffffff#980123#000000,#112331#874653#152341" name="hex_input" />
+				<button
+					class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+					type="submit" name="load" value="load">Load</button>
+			</div>
+		</form>
+		{% if messages %}
+		<div class="text-center mx-auto">
+			{% for message in messages %}
+			<p class="text-red-500">{{ message }}</p>
+			{% endfor %}
+		</div>
+		{% endif %}
+	
+		<div class="text-center mx-auto my-3">
+			<p>Or</p>
+		</div>
+	
+		<form class="form mx-auto my-3" method="post" action="">
+			<div class="flex justify-center">
+				{% csrf_token %}
+				<button
+					class="flex-shrink-0 bg-indigo-500 hover:bg-indigo-700 border-indigo-500 hover:border-indigo-700 text-sm border-4 text-white py-1 px-2 rounded"
+					type="submit" name="random" value="random">Random</button>
+			</div>
+		</form>
+
+		{% if not messages %}
+		{% for palette in hex_data %}
+		<div class="flex flex-row flex-nowrap mx-auto my-3 justify-center items-center">
+		
+			<p class="w-32 text-right mr-5">Input Palette {{ forloop.counter }}</p>
+			<div class="flex flex-row">
+				{% for c in palette %}
+				<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+				{% endfor %}
+			</div>
+		
+		</div>
+		{% endfor %}
+		{% endif %}
+	</div>
+</div>
+
+{% if not messages %}
+<div class="grid grid-flow-row m-10 gap-10 overflow-x-auto">
+	<div class="flex flex-row justify-center items-center">
+		<div class="flex flex-col justify-center items-center w-80">
+			<canvas id="graph" class="w-52 h-52"></canvas>
+		</div>
+		<div class="flex flex-col">
+			{% for palette in sorted_indices %}
+			<div class="flex flex-row mb-5">
+				{% for cidx in palette %}
+				<div class="w-8 h-8"
+					style="background-color:{% value_of_double_indices hex_data forloop.parentloop.counter0 cidx %}">
+				</div>
+				{% endfor %}
+			</div>
+			{% endfor %}
+			<p>Elapsed time: {{ elapsed_time|floatformat:-2 }}s</p>
+		</div>
+	</div>
+</div>
+
+<script type='module'>
+import { load_multiple_palettes_graphs } from "{% static 'js/load_graph.js' %}";
+import { add_multiple_palettes_lines } from "{% static 'js/load_graph.js' %}";
+
+let colormaps = [0x0000ff, 0xff0000, 0x00ff00, 0xffff00, 0xff00ff, 0x00ffff, 0x7e995377, 0xd9a73977, 0xbd080877, 0x0300ff77, 0xe8ff0077, 0xdf1e8577, 0xffe30277, 0x00adf277, 0x9f00ff77];
+
+load_multiple_palettes_graphs("graph", {{ hex_data|safe }}, {{ geo_coords }});
+add_multiple_palettes_lines("graph", {{ sorted_indices }}, {{ geo_coords }}, colormaps);
+</script>
+{% endif %}
+
+</body>
+</html>

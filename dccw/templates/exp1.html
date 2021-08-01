@@ -1,0 +1,79 @@
+{% load static %}
+{% load index %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- <link rel="icon" href="{% static 'img/icon.ico' %}"> -->
+<script type="module" src="{% static 'js/load_graph.js' %}"></script>
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="sticky top-0 w-full bg-white border-gray-300 border-b overflow-x-auto">
+	<div class="w-full text-lg">
+		<p><a href="/" class="font-bold hover:text-pink-600 ml-3">DCCW</a>: Experiment 1. Single Palette Sorting of FM100P (k={{ palette_length }})</p>
+	</div>
+
+	<div class="flex flex-col justify-center items-baseline">
+		<div class="flex flex-row flex-nowrap justify-center mx-auto my-3 items-center">
+			<p class="w-52 mr-5 text-right flex-shrink-0">Input Palette</p>
+			<div class="flex flew-row flex-shrink-0">
+				{% for c in hex_data %}
+				<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="flex flex-row flex-nowrap justify-center mx-auto my-3 items-center">
+			<p class="w-52 mr-5 text-right">Correctly Ordered Palette</p>
+			<div class="flex flew-row">
+				{% for c in correct_hex_data %}
+				<div class="w-8 h-8" style="background-color:{{ c }}"></div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="grid grid-flow-row m-10 gap-10 overflow-x-auto">
+{% for sort_method, indices in sorted_indices.items %}
+	<div class="flex flex-row justify-center items-center">
+		<div class="flex flex-col justify-center items-center w-80">
+			<p class="mb-3 font-bold">{{ sort_method }}</p>
+			<canvas id="graph_{{ sort_method }}" class="w-52 h-52"></canvas>
+		</div>
+		<div class="flex flex-col">
+			<div class="flex flew-row">
+			{% for idx in indices %}
+				<div class="w-8 h-8" style="background-color:{{ hex_data|index:idx }}"></div>
+			{% endfor %}
+			</div>
+			<ul class="list-disc list-inside mt-3">
+			<li>Elapsed time: {{ elapsed_time|index:sort_method|floatformat:"-4" }}</li>
+			<li>SR: {{ success|index:sort_method }}</li>
+			<li>LD: {{ levenshtein_distance|index:sort_method|floatformat:"-4" }}</li>
+			<li>LLIS: {{ llis|index:sort_method|floatformat:"-4" }}</li>
+			</ul>
+		</div>
+	</div>
+{% endfor %}
+</div>
+
+<script type='module'>
+import { load_graph } from "{% static 'js/load_graph.js' %}";
+import { add_lines } from "{% static 'js/load_graph.js' %}";
+
+let geo_coords = {{ geo_coords }};
+let colormap = 0x7e995377;
+
+{% for sort_method, indices in sorted_indices.items %}
+	load_graph("graph_{{ sort_method }}", "lab", {{ hex_data|safe }}, geo_coords);
+	add_lines("graph_{{ sort_method }}", "lab", {{ indices }}, geo_coords, colormap);
+{% endfor %}
+
+</script>
+
+</body>
+</html>
