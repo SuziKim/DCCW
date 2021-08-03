@@ -1,7 +1,5 @@
 # Dynamic Closest Color Warping to Sort and Compare Palettes
 
-[![Docker](https://img.shields.io/docker/cloud/build/kimsuzi08/dccw?label=Docker&style=flat)](https://hub.docker.com/r/kimsuzi08/dccw/builds)
-
 ![DCCW teaser](images/dccw-teaser.jpg)  
 
 [Dynamic Closest Color Warping to Sort and Compare Palettes](https://doi.org/10.1145/3450626.3459776)  
@@ -27,19 +25,13 @@ git clone https://github.com/SuziKim/DCCW-dataset.git experiments/DCCW-dataset
 ```
 
 ### Docker Setup
-This repository provides a Dockerfile for setting up all dependencies. You can build and run a docker image by yourself
+This repository provides a Dockerfile for setting up all dependencies. You can build and run a docker image by yourself.
 ```bash
-docker build -t dccw:v1.0 .
-docker run --rm --name dccw -p 8000:8000 dccw:v1.0
+docker compose up --build
 ```
 
-or you just can pull and run the pre-built image.
-```bash
-docker pull kimsuzi08/dccw:v1.0
-docker run --rm --name dccw -p 8000:8000 kimsuzi08/dccw:v1.0
-```
-
-Now you can access ```localhost:8000``` and see the DCCW website locally.
+Now you can access ```localhost``` and see the DCCW website locally.
+![Screenshot](images/screenshot.png)
 
 ## Publication
 
@@ -57,6 +49,7 @@ Please cite with the following Bibtex code:
     volume = {40},
     number = {4},
     articleno = {95},
+    pages  = {1--15},
     address = {New York, NY, USA},
     doi = {10.1145/3450626.3459776},
 }

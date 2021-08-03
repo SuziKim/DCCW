@@ -3,8 +3,6 @@
 FROM ubuntu:18.04
 # FROM python:3.6
 
-EXPOSE 8000
-
 ENV HOME /root
 
 # Keeps Python from generating .pyc files in the container
@@ -92,4 +90,5 @@ COPY . /app
 # USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
+# EXPOSE 8000
 # CMD ["gunicorn", "--bind", "0.0.0.0:8000", "DCCWWebDemo.wsgi"]
