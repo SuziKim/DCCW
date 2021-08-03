@@ -78,11 +78,14 @@ COPY requirements.txt .
 RUN python3 -m pip install cmake
 RUN python3 -m pip install -r requirements.txt
 
-RUN git clone https://github.com/fikisipi/elkai.git
-RUN python3 -m pip install -e ./elkai
+RUN git clone https://github.com/fikisipi/elkai.git $HOME/elkai
+RUN python3 -m pip install -e $HOME/elkai
 
 WORKDIR /app
 COPY . /app
+
+RUN python3 /app/manage.py makemigrations
+RUN python3 /app/manage.py migrate
 
 # Creates a non-root user with an explicit UID and adds permission to access the /app folder
 # For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers

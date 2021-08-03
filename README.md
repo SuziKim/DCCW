@@ -27,6 +27,7 @@ git clone https://github.com/SuziKim/DCCW-dataset.git experiments/DCCW-dataset
 ### Docker Setup
 This repository provides a Dockerfile for setting up all dependencies. You can build and run a docker image by yourself.
 ```bash
+mkdir user_data
 docker compose up --build
 ```
 
