@@ -215,6 +215,16 @@ def imageRecoloring(request):
 				os.makedirs(output_dir_path, exist_ok=True)
 
 				input_image = Image.open(file_form.cleaned_data['source_image'])
+				
+				resize_length = 250
+				if input_image.width > resize_length or input_image.height > resize_length:
+					print("resize")
+					if input_image.width > input_image.height:
+						input_image = input_image.resize((resize_length, int(input_image.height * resize_length / input_image.width)))
+					else:
+						input_image = input_image.resize((int(input_image.width * resize_length / input_image.height), resize_length))
+				print(input_image.width, input_image.height)
+
 				input_image.save(os.path.join(output_dir_path, 'source_image.png'), optimize=False, quality=100)
 				np_input_image = np.asfarray(input_image.convert('RGBA'))
 				
