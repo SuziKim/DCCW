@@ -89,3 +89,4 @@ db.sqlite3
 .vscode
 user_data/
 experiments/DCCW-dataset
+certbot/
