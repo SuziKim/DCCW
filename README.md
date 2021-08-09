@@ -42,6 +42,10 @@ Now you can access ```localhost``` and see the DCCW website locally.
 Our paper is available at [ACM Digital Library](https://doi.org/10.1145/3450626.3459776).  
 ![Paper thumbnails](images/paper-thumbnails.jpg)
 
+Following supplemental materials are also available. 
+- [Supplemental material](files/SG2021-DCCW-Supplemental-Material-1.pdf) for acronym table, detailed related works, perceptual study analysis, and additional image recoloring results
+- Perceptual study questionnaire for [SPS](files/SG2021-DCCW-perceptual_study-questionnaire-SPS.pdf) and [PPS](files/SG2021-DCCW-perceptual_study-questionnaire-PPS.pdf)
+
 Please cite with the following Bibtex code:  
 
 ```bibtex
