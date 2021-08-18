@@ -70,7 +70,8 @@ def paletteInterpolation(request):
 			print("[ERROR] No such post name..")
 
 	else:
-		color_palette = ColorPalette(auto_fetched=True, palette_length=color_count)
+		# For Replicability Stamp, initialize with palettes used in teaser image
+		color_palette = ColorPalette(auto_fetched=False, colors=["#fae3e1","#1a4646","#fbbf8d","#db904c","#cacaee","#329c99"])
 
 	color_sorter = SinglePaletteSorter(color_palette)
 	sorted_indices_dccw = {}
