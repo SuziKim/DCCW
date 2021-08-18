@@ -96,7 +96,9 @@ def sortMultiplePalettes(request):
 			print("[ERROR] No such post name..")
 
 	else:
-		color_palettes = view_helper.fetch_new_palettes(palette_count, palette_lengths, is_color_count_a_list=True)
+		# For Replicability Stamp, initialize with palettes used in teaser image
+		color_palettes_list = [["#063f75","#065e73","#44b991","#ead53d","#f26c69","#ebd7a9","#f1af43","#ba4830","#382728","#321d37"], ["#43434a","#6d9489","#e0dbc5","#e5b393","#c17d3e","#343333","#3d4d5b","#688b9b","#d4e6d7","#e0c5b2"]]
+		color_palettes = ColorPalettes(auto_fetched=False, color_palettes_list=color_palettes_list, is_hex_list=True)
 
 	geo_coords = color_palettes.get_geo_coords()
 
