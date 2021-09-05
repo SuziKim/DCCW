@@ -15,6 +15,10 @@ You can try demo here: https://suzikim.kaist.ac.kr
 
 ## How to Run
 
+### Prerequisites 
+
+Our code is executed on top of the [Docker](https://www.docker.com/) container. Please go to the [official docker installation guide](https://docs.docker.com/get-docker/) if you don't already have Docker installed on your system.
+
 ### Clone the Repository
 
 ```bash
@@ -27,11 +31,12 @@ cd DCCW
 git clone https://github.com/SuziKim/DCCW-dataset.git experiments/DCCW-dataset
 ```
 
+
 ### Docker Setup
 This repository provides a Dockerfile for setting up all dependencies. You can build and run a docker image by yourself.
 ```bash
 mkdir user_data
-docker compose up --build
+docker-compose up --build
 ```
 
 Now you can access ```localhost``` and see the DCCW website locally.
