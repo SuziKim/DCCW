@@ -12,8 +12,6 @@ Presented at [ACM SIGGRAPH 2021](https://s2021.siggraph.org/)
 ## Abstract 
 A color palette is one of the simplest and most intuitive descriptors that can be extracted from images or videos. This paper proposes a method to assess the similarity between color palettes by sorting colors. While previous palette similarity measures compare only colors without considering the overall palette combination, we sort palettes to minimize the geometric distance between colors and align them to share a common color tendency. We propose dynamic closest color warping (DCCW) to calculate the minimum distance sum between colors and the graph connecting the colors in the other palette. We evaluate the proposed palette sorting and DCCW with several datasets and demonstrate that DCCW outperforms previous methods in terms of accuracy and computing time. We validate the effectiveness of the proposed sorting technique by conducting a perceptual study, which indicates a clear preference for the results of our approach. We also demonstrate useful applications enabled by DCCW, including palette interpolation, palette navigation, and image recoloring.   
 
-## Demo
-You can try demo here: https://suzikim.kaist.ac.kr
 
 ## How to Run
 
